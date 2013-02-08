@@ -60,6 +60,8 @@ float determinant(float *matrix, int dimension){
     for (i = 0; i < dimension; i++)
         result *= getAt(m, i, i, dimension);
 
+    free(m);
+
     return result;
 }
 
