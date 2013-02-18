@@ -1,22 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
-#define DIMENSION 3     // Dimension for the matrix to be defined
+#define DIMENSION 20     // Dimension for the matrix to be defined
 
 float determinant(float *matrix, int dimension);
 float getAt(float *m, int i, int j, int dimension);
 void putAt(float *m, int i, int j, int dimension, float value);
+void randomMatrix(float *matrix, int dimension);
 
 int main(int argc, char ** argv){
-    float matrix[DIMENSION][DIMENSION] = {
-        {25, 5, 1},
-        {64, 8, 1},
-        {144, 12, 1}};
+    float matrix[DIMENSION][DIMENSION];
     float det;
+    
+   // Generate random matrix
+    randomMatrix((float *) matrix, DIMENSION);
     det = determinant( (float *) matrix, DIMENSION);
     
-    printf("%f \n", det);   // answer should be -84
+    printf("%f \n", det);   
     return 0;
 }
 
@@ -73,4 +75,22 @@ float getAt(float *m, int i, int j, int dimension){
 // Based on i and j, and a float pointer, put the value at row i column j
 void putAt(float *m, int i, int j, int dimension, float value){
     *(m + i*dimension + j) = value;
+}
+
+// Generate a n by n matrix consisting of numbers between -1 and 1.
+// Outputs in a Matlab format, good for checking in Matlab
+void randomMatrix(float *matrix, int dimension){
+	int i, j;
+	float no;
+	srand(time(NULL));
+	printf("[\n");
+	for (i = 0; i < dimension; i++){
+		for (j = 0; j < dimension; j++){
+			no = ((float) (rand()%20))/10-1;
+			*(matrix+i*dimension+j) = no;
+			printf("%f ", no);
+		}
+		printf(";\n");
+	}
+	printf("\n]\n");
 }
