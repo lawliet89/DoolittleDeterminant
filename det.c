@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 
 #define DIMENSION 20     // Dimension for the matrix to be defined
 
@@ -28,8 +29,10 @@ int main(){
 }
 
 float determinant(float **matrix, int dimension){
-    int i, j, p;
-    float a, result;
+    int i, j, k, p, swapCount=0, determinantFactor=1;
+    float a, ajj, result, value;
+    float **swapRow;
+    float *swapRowTemp;
     float **m = NULL;
 
     // Let us copy the matrix first
@@ -44,11 +47,40 @@ float determinant(float **matrix, int dimension){
 
     for (i = 0; i < dimension; i++){
         for (j = 0; j < i; j++){
+            ajj = getAt(m,j,j);
+
+            // we need to do a row swap
+            if (ajj == 0){
+                if (swapCount == dimension){
+                    // Seems like we have exhaused all swaps
+                    return NAN;
+                }
+
+                // Let's find a swap row to swap
+                result = -INFINITY;
+                for (k = j; k < dimension; k++){
+                    value = getAt(m, i, k);
+                    if (value > result){
+                        result = value;
+                        swapRow = matrix + k;
+                    }
+                }
+
+                // Swap rows
+                swapRowTemp = *swapRow;
+                swapRow = *(matrix + j);
+                *(matrix + j) = swapRowTemp;
+                swapCount++;
+                determinantFactor *= -1;
+
+                ajj = getAt(m,j,j);
+            }
+
             a = getAt(m, i, j);
             for (p = 0; p < j; p++){
                 a -= getAt(m, i, p) * getAt(m, p, j);
             }
-            putAt(m, i, j, a/getAt(m, j, j));
+            putAt(m, i, j, a/ajj);
         }
         for (j = i; j < dimension; j++){
             a = getAt(m, i, j);
@@ -63,7 +95,7 @@ float determinant(float **matrix, int dimension){
     // Because the lower triangle is a unit triangular matrix
     // the determinant is simply a product of all the upper triangle diagonal
     // which in this case is exactly the diagonal of m
-    result = 1;
+    result = determinantFactor;
     for (i = 0; i < dimension; i++)
         result *= getAt(m, i, i);
 
