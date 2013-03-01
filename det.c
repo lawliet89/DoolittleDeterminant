@@ -1,3 +1,6 @@
+/**
+    Note: The arrays are implemented as Ragged Arrays
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,31 +8,33 @@
 
 #define DIMENSION 20     // Dimension for the matrix to be defined
 
-float determinant(float *matrix, int dimension);
-float getAt(float *m, int i, int j, int dimension);
-void putAt(float *m, int i, int j, int dimension, float value);
-void randomMatrix(float *matrix, int dimension);
+float determinant(float **matrix, int dimension);
+float getAt(float **m, int i, int j);
+void putAt(float **m, int i, int j, float value);
+float **randomMatrix(int dimension);
+float **copyMatrix(float **matrix, int dimension);
+void deleteMatrix(float **matrix, int dimension);
 
-int main(int argc, char ** argv){
-    float matrix[DIMENSION][DIMENSION];
+int main(){
+    float **matrix;     // matrix is a pointer to pointer
     float det;
     
-   // Generate random matrix
-    randomMatrix((float *) matrix, DIMENSION);
-    det = determinant( (float *) matrix, DIMENSION);
+   // Generate, and initialise random matrix
+    matrix = randomMatrix(DIMENSION);
+    det = determinant(matrix, DIMENSION);
     
     printf("%f \n", det);   
     return 0;
 }
 
-float determinant(float *matrix, int dimension){
+float determinant(float **matrix, int dimension){
     int i, j, p;
     float a, result;
-    float *m;
+    float **m = NULL;
 
     // Let us copy the matrix first
-    m = (float *) malloc( sizeof(float)*dimension*dimension );
-    memcpy(m, matrix, sizeof(float)*dimension*dimension );
+    //m = copyMatrix(matrix, dimension);
+    m = matrix;
 
     // First step: perform LU Decomposition using Doolittle's Method
     // This algorithm will return, in the same matrix, a lower unit triangular matrix
@@ -39,18 +44,18 @@ float determinant(float *matrix, int dimension){
 
     for (i = 0; i < dimension; i++){
         for (j = 0; j < i; j++){
-            a = getAt(m, i, j, dimension);
+            a = getAt(m, i, j);
             for (p = 0; p < j; p++){
-                a -= getAt(m, i, p, dimension) * getAt(m, p, j, dimension);
+                a -= getAt(m, i, p) * getAt(m, p, j);
             }
-            putAt(m, i, j, dimension, a/getAt(m, j, j, dimension));
+            putAt(m, i, j, a/getAt(m, j, j));
         }
         for (j = i; j < dimension; j++){
-            a = getAt(m, i, j, dimension);
+            a = getAt(m, i, j);
             for (p = 0; p < i; p++){
-                a -= getAt(m, i, p, dimension) * getAt(m, p, j, dimension);
+                a -= getAt(m, i, p) * getAt(m, p, j);
             }
-            putAt(m, i, j, dimension, a);
+            putAt(m, i, j, a);
         }
     }
 
@@ -60,37 +65,76 @@ float determinant(float *matrix, int dimension){
     // which in this case is exactly the diagonal of m
     result = 1;
     for (i = 0; i < dimension; i++)
-        result *= getAt(m, i, i, dimension);
+        result *= getAt(m, i, i);
 
-    free(m);
+    deleteMatrix(m, dimension);
 
     return result;
 }
 
 // Based on i and j, and a float pointer, get the value at row i column j
-float getAt(float *m, int i, int j, int dimension){
-    return *(m + i*dimension + j);
+float getAt(float **m, int i, int j){
+    return *(*(m + i) + j);
 }
 
 // Based on i and j, and a float pointer, put the value at row i column j
-void putAt(float *m, int i, int j, int dimension, float value){
-    *(m + i*dimension + j) = value;
-}
+void putAt(float **m, int i, int j, float value){
+    *( (*(m+i)) + j ) = value;
+} 
 
 // Generate a n by n matrix consisting of numbers between -1 and 1.
 // Outputs in a Matlab format, good for checking in Matlab
-void randomMatrix(float *matrix, int dimension){
+float **randomMatrix(int dimension){
 	int i, j;
+    float **matrix;
+    float *row;
 	float no;
-	srand(time(NULL));
-	printf("[\n");
+
+    // let's first initialise the ragged array
+    // initialise Ragged Array
+    matrix = (float **) malloc(dimension*sizeof(float *));
+
+    // Seed random number generator
+    srand(time(NULL));
+
+	printf("[");
 	for (i = 0; i < dimension; i++){
+        // Initialise this row
+        row = (float *) malloc(dimension*sizeof(float));
+        *(matrix + i) = row;
+
+        // random no between -1 and 1
 		for (j = 0; j < dimension; j++){
 			no = ((float) (rand()%20))/10-1;
-			*(matrix+i*dimension+j) = no;
+			 *(row + j) = no;
 			printf("%f ", no);
 		}
 		printf(";\n");
 	}
-	printf("\n]\n");
+	printf("]\n");
+
+    return matrix;
+}
+
+// copy matrix (ragged array)
+float **copyMatrix(float **matrix, int dimension){
+    int i;
+    float **copy = (float **) malloc(dimension*sizeof(float *));
+
+    for (i = 0; i < dimension; i++){
+        // allocate memory for row
+        *(copy + i) = (float *) malloc(dimension*sizeof(float));
+        // copy row
+        memcpy( *(copy +i), *(matrix + i), sizeof(float)*dimension );
+    }
+
+    return copy;
+}
+
+// delete matrix (ragged array)
+void deleteMatrix(float **matrix, int dimension){
+    int i;
+    for (i = 0; i <dimension; i++){
+        free( *(matrix+i));
+    }
 }
