@@ -6,6 +6,9 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+#include <fstream>
+
+using namespace std;
 
 #define DIMENSION 20     // Dimension for the matrix to be defined
 
@@ -16,10 +19,16 @@ float **randomMatrix(int dimension);
 float **copyMatrix(float **matrix, int dimension);
 void deleteMatrix(float **matrix, int dimension);
 
+// Profiling stuff
+ofstream readProfile, writeProfile;
+
 int main(){
     float **matrix;     // matrix is a pointer to pointer
     float det;
-    
+
+    // Open and create profiling files
+    readProfile.open("read.txt", ios_base::out | ios_base::trunc);
+    writeProfile.open("write.txt", ios_base::out | ios_base::trunc);
    // Generate, and initialise random matrix
     matrix = randomMatrix(DIMENSION);
     det = determinant(matrix, DIMENSION);
@@ -107,11 +116,13 @@ float determinant(float **matrix, int dimension){
 
 // Based on i and j, and a float pointer, get the value at row i column j
 float getAt(float **m, int i, int j){
+    readProfile << i << " " << j << "\n";
     return *(*(m + i) + j);
 }
 
 // Based on i and j, and a float pointer, put the value at row i column j
 void putAt(float **m, int i, int j, float value){
+    writeProfile << i << " " << j << "\n";
     *( (*(m+i)) + j ) = value;
 } 
 
