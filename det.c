@@ -7,7 +7,7 @@
 #include <time.h>
 #include <math.h>
 
-#define DIMENSION 3     // Dimension for the matrix to be defined
+#define DIMENSION 20     // Dimension for the matrix to be defined
 
 float determinant(float **matrix, int dimension);
 float getAt(float **m, int i, int j);
@@ -117,32 +117,33 @@ void putAt(float **m, int i, int j, float value){
 // Generate a n by n matrix consisting of numbers between -1 and 1.
 // Outputs in a Matlab format, good for checking in Matlab
 float **randomMatrix(int dimension){
-	int i, j;
+    int i, j;
     float **matrix;
     float *row;
-	float no;
+    float no;
 
     // let's first initialise the ragged array
     // initialise Ragged Array
     matrix = (float **) malloc(dimension*sizeof(float *));
 
-    row = (float *) malloc(dimension*sizeof(float));
-    *(matrix) = row;
-    *row = 4;
-    *(row + 1) = 3;
-    *(row + 2) = 2;
+    // Seed random number generator
+    srand(time(NULL));
 
-    row = (float *) malloc(dimension*sizeof(float));
-    *(matrix+1) = row;
-    *row = 4;
-    *(row + 1) = 3;
-    *(row + 2) = 6;   
+    printf("[");
+    for (i = 0; i < dimension; i++){
+        // Initialise this row
+        row = (float *) malloc(dimension*sizeof(float));
+        *(matrix + i) = row;
 
-    row = (float *) malloc(dimension*sizeof(float));
-    *(matrix+2) = row;
-    *row = 2;
-    *(row + 1) = 1;
-    *(row + 2) = 0;   
+        // random no between -1 and 1
+        for (j = 0; j < dimension; j++){
+            no = ((float) (rand()%20))/10-1;
+             *(row + j) = no;
+            printf("%f ", no);
+        }
+        printf(";\n");
+    }
+    printf("]\n");
 
     return matrix;
 }
