@@ -49,7 +49,8 @@ float determinant(float **matrix, int dimension){
         for (j = 0; j < i; j++){
             ajj = getAt(m,j,j);
 
-            // we need to do a row swap
+            // a number we are dividing by is zero.
+            // we thus have to do a partial pivot
             if (ajj == 0){
                 if (swapCount == dimension){
                     // Seems like we have exhaused all swaps
