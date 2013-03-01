@@ -7,7 +7,7 @@
 #include <time.h>
 #include <math.h>
 
-#define DIMENSION 20     // Dimension for the matrix to be defined
+#define DIMENSION 3     // Dimension for the matrix to be defined
 
 float determinant(float **matrix, int dimension);
 float getAt(float **m, int i, int j);
@@ -58,17 +58,17 @@ float determinant(float **matrix, int dimension){
 
                 // Let's find a swap row to swap
                 result = -INFINITY;
-                for (k = j; k < dimension; k++){
-                    value = getAt(m, i, k);
+                for (k = 0; k < dimension; k++){
+                    value = getAt(m, k, j);
                     if (value > result){
                         result = value;
                         swapRow = matrix + k;
                     }
                 }
-
+                //printf("Swap %d with %d (i = %d) \n", j, (swapRow - matrix), i);
                 // Swap rows
                 swapRowTemp = *swapRow;
-                swapRow = *(matrix + j);
+                *swapRow = *(matrix + j);
                 *(matrix + j) = swapRowTemp;
                 swapCount++;
                 determinantFactor *= -1;
@@ -126,24 +126,23 @@ float **randomMatrix(int dimension){
     // initialise Ragged Array
     matrix = (float **) malloc(dimension*sizeof(float *));
 
-    // Seed random number generator
-    srand(time(NULL));
+    row = (float *) malloc(dimension*sizeof(float));
+    *(matrix) = row;
+    *row = 4;
+    *(row + 1) = 3;
+    *(row + 2) = 2;
 
-	printf("[");
-	for (i = 0; i < dimension; i++){
-        // Initialise this row
-        row = (float *) malloc(dimension*sizeof(float));
-        *(matrix + i) = row;
+    row = (float *) malloc(dimension*sizeof(float));
+    *(matrix+1) = row;
+    *row = 4;
+    *(row + 1) = 3;
+    *(row + 2) = 6;   
 
-        // random no between -1 and 1
-		for (j = 0; j < dimension; j++){
-			no = ((float) (rand()%20))/10-1;
-			 *(row + j) = no;
-			printf("%f ", no);
-		}
-		printf(";\n");
-	}
-	printf("]\n");
+    row = (float *) malloc(dimension*sizeof(float));
+    *(matrix+2) = row;
+    *row = 2;
+    *(row + 1) = 1;
+    *(row + 2) = 0;   
 
     return matrix;
 }
