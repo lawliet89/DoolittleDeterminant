@@ -7,7 +7,7 @@
 #include <time.h>
 #include <math.h>
 
-#define DIMENSION 20     // Dimension for the matrix to be defined
+#define DIMENSION 64     // Dimension for the matrix to be defined
 
 float determinant(float **matrix, int dimension);
 float getAt(float **m, int i, int j);
@@ -15,6 +15,7 @@ void putAt(float **m, int i, int j, float value);
 float **randomMatrix(int dimension);
 float **copyMatrix(float **matrix, int dimension);
 void deleteMatrix(float **matrix, int dimension);
+void swapRows(float **m, int a, int b);
 
 int main(){
     float **matrix;     // matrix is a pointer to pointer
@@ -31,8 +32,7 @@ int main(){
 float determinant(float **matrix, int dimension){
     int i, j, k, p, swapCount=0, determinantFactor=1;
     float a, ajj, result, value;
-    float **swapRow;
-    float *swapRowTemp;
+	int swapee = 0;		// used to indicate row to swap
     float **m = NULL;
 
     // Let us copy the matrix first
@@ -63,14 +63,11 @@ float determinant(float **matrix, int dimension){
                     value = getAt(m, k, j);
                     if (value > result){
                         result = value;
-                        swapRow = matrix + k;
+                        swapee = k;
                     }
                 }
-                //printf("Swap %d with %d (i = %d) \n", j, (swapRow - matrix), i);
-                // Swap rows
-                swapRowTemp = *swapRow;
-                *swapRow = *(matrix + j);
-                *(matrix + j) = swapRowTemp;
+				// Swap rows
+				swapRows(m, j, swapee);              
                 swapCount++;
                 determinantFactor *= -1;
 
@@ -171,4 +168,11 @@ void deleteMatrix(float **matrix, int dimension){
         free( *(matrix+i));
     }
 	free(matrix);
+}
+
+// swap rows -- ragged array. swap rows a and b
+void swapRows(float **matrix, int a, int b){
+	 float *swapRowTemp = *( matrix + a );
+	 *( matrix + a ) = *( matrix + b );
+	 *( matrix + b ) = swapRowTemp;
 }
