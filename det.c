@@ -36,7 +36,7 @@ float determinant(float **matrix, int dimension){
     float **m = NULL;
 
     // Let us copy the matrix first
-    //m = copyMatrix(matrix, dimension);
+    m = copyMatrix(matrix, dimension);
     m = matrix;
 
     // First step: perform LU Decomposition using Doolittle's Method
@@ -101,7 +101,7 @@ float determinant(float **matrix, int dimension){
         result *= getAt(m, i, i);
 
     deleteMatrix(m, dimension);
-
+	
     return result;
 }
 
@@ -170,4 +170,5 @@ void deleteMatrix(float **matrix, int dimension){
     for (i = 0; i <dimension; i++){
         free( *(matrix+i));
     }
+	free(matrix);
 }
