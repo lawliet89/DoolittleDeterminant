@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define DIMENSION 32     // Dimension for the matrix to be defined
+#define DIMENSION 256     // Dimension for the matrix to be defined
 
 float determinant(float **matrix, int dimension);
 float getAt(float **m, int i, int j);
@@ -33,7 +33,7 @@ int main(){
     //writeProfile.open("write.txt", ios_base::out | ios_base::trunc);
 	arithmeticProfile.open("arithmetic.txt", ios_base::out | ios_base::trunc);
 	
-	for (; dimension <= 32; dimension++){
+	for (; dimension <= DIMENSION; dimension++){
 	   // Generate, and initialise random matrix
 		matrix = randomMatrix(dimension);
 		det = determinant(matrix, dimension);
