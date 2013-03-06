@@ -7,6 +7,7 @@
 #include <time.h>
 #include <math.h>
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 
@@ -20,24 +21,33 @@ float **copyMatrix(float **matrix, int dimension);
 void deleteMatrix(float **matrix, int dimension);
 
 // Profiling stuff
-ofstream readProfile, writeProfile;
+ofstream readProfile, writeProfile, arithmeticProfile;
 int multiplyCount = 0, divideCount = 0, subtractCount = 0;
 
 int main(){
     float **matrix;     // matrix is a pointer to pointer
     float det;
-
+	int dimension = 2;
     // Open and create profiling files
-    readProfile.open("read.txt", ios_base::out | ios_base::trunc);
-    writeProfile.open("write.txt", ios_base::out | ios_base::trunc);
-   // Generate, and initialise random matrix
-    matrix = randomMatrix(DIMENSION);
-    det = determinant(matrix, DIMENSION);
-    
-    printf("%f \n", det);   
-	printf("No. of Multiplication: %d\n", multiplyCount);
-	printf("No. of Division: %d\n", divideCount);
-	printf("No. of Subtraction: %d\n", subtractCount);
+    //readProfile.open("read.txt", ios_base::out | ios_base::trunc);
+    //writeProfile.open("write.txt", ios_base::out | ios_base::trunc);
+	arithmeticProfile.open("arithmetic.txt", ios_base::out | ios_base::trunc);
+	
+	for (; dimension <= 32; dimension++){
+	   // Generate, and initialise random matrix
+		matrix = randomMatrix(dimension);
+		det = determinant(matrix, dimension);
+		
+		//printf("%f \n", det);   
+		//printf("No. of Multiplication: %d\n", multiplyCount);
+		//printf("No. of Division: %d\n", divideCount);
+		//printf("No. of Subtraction: %d\n", subtractCount);
+		arithmeticProfile << dimension << ": " << multiplyCount << " "
+			<< divideCount << " " << subtractCount  << endl;
+		cout << dimension << ": " << multiplyCount << " "
+			<< divideCount << " " << subtractCount << endl;
+		deleteMatrix(matrix, dimension);
+	}
     return 0;
 }
 
@@ -151,7 +161,7 @@ float **randomMatrix(int dimension){
     // Seed random number generator
     srand(time(NULL));
 
-    printf("[");
+    //printf("[");
     for (i = 0; i < dimension; i++){
         // Initialise this row
         row = (float *) malloc(dimension*sizeof(float));
@@ -161,11 +171,11 @@ float **randomMatrix(int dimension){
         for (j = 0; j < dimension; j++){
             no = ((float) (rand()%20))/10-1;
              *(row + j) = no;
-            printf("%f ", no);
+            //printf("%f ", no);
         }
-        printf(";\n");
+        //printf(";\n");
     }
-    printf("]\n");
+    //printf("]\n");
 
     return matrix;
 }
@@ -191,4 +201,5 @@ void deleteMatrix(float **matrix, int dimension){
     for (i = 0; i <dimension; i++){
         free( *(matrix+i));
     }
+	free(matrix);
 }
