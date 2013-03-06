@@ -10,7 +10,7 @@
 
 using namespace std;
 
-#define DIMENSION 20     // Dimension for the matrix to be defined
+#define DIMENSION 32     // Dimension for the matrix to be defined
 
 float determinant(float **matrix, int dimension);
 float getAt(float **m, int i, int j);
@@ -21,6 +21,7 @@ void deleteMatrix(float **matrix, int dimension);
 
 // Profiling stuff
 ofstream readProfile, writeProfile;
+int multiplyCount = 0, divideCount = 0, subtractCount = 0;
 
 int main(){
     float **matrix;     // matrix is a pointer to pointer
@@ -34,6 +35,9 @@ int main(){
     det = determinant(matrix, DIMENSION);
     
     printf("%f \n", det);   
+	printf("No. of Multiplication: %d\n", multiplyCount);
+	printf("No. of Division: %d\n", divideCount);
+	printf("No. of Subtraction: %d\n", subtractCount);
     return 0;
 }
 
@@ -89,13 +93,18 @@ float determinant(float **matrix, int dimension){
             a = getAt(m, i, j);
             for (p = 0; p < j; p++){
                 a -= getAt(m, i, p) * getAt(m, p, j);
+				subtractCount++;
+				multiplyCount++;
             }
             putAt(m, i, j, a/ajj);
+			divideCount++;
         }
         for (j = i; j < dimension; j++){
             a = getAt(m, i, j);
             for (p = 0; p < i; p++){
                 a -= getAt(m, i, p) * getAt(m, p, j);
+				subtractCount++;
+				multiplyCount++;
             }
             putAt(m, i, j, a);
         }
@@ -106,9 +115,10 @@ float determinant(float **matrix, int dimension){
     // the determinant is simply a product of all the upper triangle diagonal
     // which in this case is exactly the diagonal of m
     result = determinantFactor;
-    for (i = 0; i < dimension; i++)
+    for (i = 0; i < dimension; i++){
         result *= getAt(m, i, i);
-
+		multiplyCount++;
+	}
     deleteMatrix(m, dimension);
 
     return result;
