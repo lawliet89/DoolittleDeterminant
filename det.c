@@ -37,7 +37,6 @@ float determinant(float **matrix, int dimension){
 
     // Let us copy the matrix first
     m = copyMatrix(matrix, dimension);
-    m = matrix;
 
     // First step: perform LU Decomposition using Doolittle's Method
     // This algorithm will return, in the same matrix, a lower unit triangular matrix
