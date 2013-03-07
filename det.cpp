@@ -59,8 +59,7 @@ float determinant(float **matrix, int dimension){
     float **m = NULL;
 
     // Let us copy the matrix first
-    //m = copyMatrix(matrix, dimension);
-    m = matrix;
+    m = copyMatrix(matrix, dimension);
 
     // First step: perform LU Decomposition using Doolittle's Method
     // This algorithm will return, in the same matrix, a lower unit triangular matrix
@@ -199,7 +198,7 @@ float **copyMatrix(float **matrix, int dimension){
 void deleteMatrix(float **matrix, int dimension){
     int i;
     for (i = 0; i <dimension; i++){
-        free( *(matrix+i));
+        free( *(matrix+i) );
     }
 	free(matrix);
 }
